@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.2.2 (Build 865_0_18507U)" ts="2019-04-11 14:07:44">
+<Class name="Test.REST.CEP">
+<Super>EnsLib.REST.Operation</Super>
+<TimeChanged>65114,50496.752223</TimeChanged>
+<TimeCreated>65114,49667.714557</TimeCreated>
+
+<Parameter name="INVOCATION">
+<Default>Queue</Default>
+</Parameter>
+
+<Method name="getEndereco">
+<FormalSpec>pRequest:Test.REST.EndReq,*pResponse:Test.REST.EndResp</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+   
+   try {
+      // Prepare and log the call
+      // Append the city to the URL configured for adapter
+      Set tURL=..Adapter.URL_"/"_pRequest.CEP_"/json"
+      
+      Set ^zGBS($I(^zGBS)) = tURL
+      // Execute the call
+      Set tSC=..Adapter.GetURL(tURL,.tHttpResponse)
+      
+      // Return the response
+      If $$$ISERR(tSC)&&$IsObject(tHttpResponse)&&$IsObject(tHttpResponse.Data)&&tHttpResponse.Data.Size {
+         Set tSC=$$$ERROR($$$EnsErrGeneral,$$$StatusDisplayString(tSC)_":"_tHttpResponse.Data.Read())
+      }
+      Quit:$$$ISERR(tSC)
+      If $IsObject(tHttpResponse) {
+         // Instantiate the response object
+         set pResponse = ##class(Test.REST.EndResp).%New()
+         // Convert JSON into a Proxy Cache Object
+         set tSC = ..JSONStreamToObject(tHttpResponse.Data, .tProxy)
+         
+         Set ^zGBS($I(^zGBS)) = tProxy
+         
+         if (tSC){                                 
+            // Set response properties from the Proxy Object
+            set pResponse.CEP = tProxy.cep
+            set pResponse.Logradouro = tProxy.logradouro
+            set pResponse.Complemento = tProxy.complemento
+            set pResponse.Bairro = tProxy.bairro
+            set pResponse.Localidade = tProxy.localidade
+            set pResponse.UF = tProxy.uf
+            set pResponse.Unidade = tProxy.unidade
+            set pResponse.IBGE = tProxy.ibge
+            set pResponse.GIA = tProxy.gia
+          }
+       }
+   }catch{
+       Set tSC=$$$SystemError
+   }
+   
+   
+   Quit tSC
+]]></Implementation>
+</Method>
+
+<XData name="MessageMap">
+<Data><![CDATA[
+<MapItems>
+  <MapItem MessageType="Test.REST.EndReq">
+    <Method>getEndereco</Method>
+  </MapItem>
+</MapItems>
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="Test.REST.EndReq">
+<Super>Ens.Request</Super>
+<TimeChanged>65114,49940.331522</TimeChanged>
+<TimeCreated>65114,49940.127534</TimeCreated>
+
+<Property name="CEP">
+<Description>
+CEP Pesquisado</Description>
+<Type>%String</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DefaultData>EndReqDefaultData</DefaultData>
+<Data name="EndReqDefaultData">
+<Structure>listnode</Structure>
+<Subscript>"EndReq"</Subscript>
+<Value name="1">
+<Value>CEP</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="Test.REST.EndResp">
+<Super>Ens.Response</Super>
+<TimeChanged>65114,49934.43487</TimeChanged>
+<TimeCreated>65114,49934.152409</TimeCreated>
+
+<Property name="CEP">
+<Type>%String</Type>
+</Property>
+
+<Property name="Logradouro">
+<Type>%String</Type>
+</Property>
+
+<Property name="Complemento">
+<Type>%String</Type>
+</Property>
+
+<Property name="Bairro">
+<Type>%String</Type>
+</Property>
+
+<Property name="Localidade">
+<Type>%String</Type>
+</Property>
+
+<Property name="UF">
+<Type>%String</Type>
+</Property>
+
+<Property name="Unidade">
+<Type>%String</Type>
+</Property>
+
+<Property name="IBGE">
+<Type>%String</Type>
+</Property>
+
+<Property name="GIA">
+<Type>%String</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DefaultData>EndRespDefaultData</DefaultData>
+<Data name="EndRespDefaultData">
+<Structure>listnode</Structure>
+<Subscript>"EndResp"</Subscript>
+<Value name="1">
+<Value>CEP</Value>
+</Value>
+<Value name="2">
+<Value>Logradouro</Value>
+</Value>
+<Value name="3">
+<Value>Complemento</Value>
+</Value>
+<Value name="4">
+<Value>Bairro</Value>
+</Value>
+<Value name="5">
+<Value>Localidade</Value>
+</Value>
+<Value name="6">
+<Value>UF</Value>
+</Value>
+<Value name="7">
+<Value>Unidade</Value>
+</Value>
+<Value name="8">
+<Value>IBGE</Value>
+</Value>
+<Value name="9">
+<Value>GIA</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>
