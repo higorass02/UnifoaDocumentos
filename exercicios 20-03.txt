@@ -1,0 +1,124 @@
+GRANT CONNECT,RESOURCE,UNLIMITED TABLESPACE TO SCOTT IDENTIFIED BY TIGER;
+ALTER USER SCOTT DEFAULT TABLESPACE USERS;
+ALTER USER SCOTT TEMPORARY TABLESPACE TEMP;
+CONNECT SCOTT/TIGER
+
+
+
+create table PRODUTORA (
+id number(3) primary key,
+nome varchar(25) not null unique,
+endereco varchar(30));
+
+create table PRODUTORA (
+id number(3),
+nome varchar(25) not null,
+endereco varchar(30),
+constraint PK_PRODUTORA primary key (id),
+constraint UK_PRODUTORA UNIQUE (NOME)
+);
+
+
+create table FILME (
+id number(5),
+nome varchar(30) not null,
+valor number (8,2) check (valor > 0),
+id_prod number (3) not null,
+constraint PK_FILME primary key (id),
+constraint FK_FILME_PRODUTORA foreign key (id_prod) references PRODUTORA (id)
+);
+
+create table COPIA (
+filme number (5) references filme(id),
+nu_copia number(2),
+status char(1),
+dt_emprest date,
+dt_reserva date,
+constraint pk_COPIA primary key(filme, nu_copia));
+
+
+create sequence sq_filme
+start with 101 increment by 2
+maxvalue 99999 cache 20 nocycle;
+
+create sequence sq_prod
+start with 10 increment by 10
+maxvalue 999 cache 10 nocycle;
+
+create index i_FILME_NOME on FILME(nome);
+
+
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'FOA FILMES','TRES POÇOS');
+INSERT INTO FILME VALUES(sq_filme.nextval,'OSWALDO ARANHA x HOMEM ARANHA',32.25, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, sysdate, SYSDATE+1);
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'TABAJARA FILMES','RUA X');
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'A VOLTA DOS QUE NÃO FORAM',5, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, SYSDATE-3, SYSDATE+1);
+INSERT INTO COPIA VALUES(sq_filme.currval,2 ,NULL, NULL, SYSDATE);
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'TITANIC',2.5, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, SYSDATE-1, NULL);
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'BARCA RIO x NITERÓI',6.5, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, NULL, NULL);
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'AS AVENTURAS DO MACACO TIÃO',9.15, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,'D', NULL, NULL);
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'AS TRANÇAS DO CARECA',5, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, NULL, SYSDATE+1);
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'QUEIMA FILMES','ONDE JUDAS PERDEU AS BOTAS');
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'PLODUTOLA DO CEBOLINHA','LUA TLINTA E TLEIS');
+INSERT INTO FILME VALUES(sq_filme.nextval,'O BANHO DO CASCAO',28, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, NULL, SYSDATE+1);
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'O PISTOLEIRO SEM DEDOS',10, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, NULL, SYSDATE);
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'TITANIC',12.5, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, NULL, NULL);
+INSERT INTO COPIA VALUES(sq_filme.currval,2 ,NULL, SYSDATE-4, NULL);
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'CALIFORNIA PICTURES','CALIFORNIA BARRA DO PIRAÍ');
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'MADE IN CHINE','TAIWAN');
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'UNICO CAMINHO','RIO DE JANEIRO');
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'SO HA UM DEUS',20, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, SYSDATE-1.3 , SYSDATE-9.33);
+INSERT INTO COPIA VALUES(sq_filme.currval,2 ,NULL, NULL, NULL);
+
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'ESC PRODUCTIONS','SIDERLÂNDIA - VOLTA REDONDA');
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'AS FACES DE UM CRIME',22.9, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, SYSDATE-1 , SYSDATE);
+INSERT INTO COPIA VALUES(sq_filme.currval,2 ,NULL, SYSDATE-4.8, NULL);
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'BRUNO E NARDONE',7.9, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, SYSDATE, NULL);
+
+INSERT INTO FILME VALUES(sq_filme.nextval,'CASCA DE FERIDA',5, sq_prod.currval);
+INSERT INTO COPIA VALUES(sq_filme.currval,1 ,NULL, SYSDATE-2.3, NULL);
+
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'PEREQUE NEWS','ANGRAS DO REI');
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'FUJI FILMES','JAPAO');
+
+INSERT INTO PRODUTORA VALUES(sq_prod.nextval,'FANTASMA','DF');
+
+
+create table acervo
+as
+select f.id id_filme, f.nome nome_filme, f.valor valor, p.id id_produtora, p.nome nome_produtora, c.nu_copia nu_copia, c.status status, c.dt_reserva dt_reserva
+from PRODUTORA p join FILME f on (f.id_prod = p.id) join COPIA c on (c.filme = f.id);
+
+
+select f.id, f.nome, f.valor, p.id, p.nome from FILME as f inner join PRODUTORA as p on(f.id = p.id);

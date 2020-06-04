@@ -1,0 +1,28 @@
+SELECT * FROM emp;
+SELECT * FROM dept;
+--1
+SELECT e.MGR Matricula,e.ename Nome,e.sal Salario,d.deptno codigo_departamento,d.dname nome_departamento FROM emp e,dept d where e.deptno = d.deptno;
+--2
+SELECT e.MGR Matricula,e.ename Nome,e.sal Salario,d.deptno codigo_departamento,d.dname nome_departamento FROM emp e,dept d where e.deptno = d.deptno and e.sal BETWEEN 1000 and 2000;
+--3
+SELECT d.dname nome_departamento,e.ename Nome,e.sal Salario FROM emp e,dept d where e.deptno = d.deptno order by 1,3,2;
+--4
+SELECT d.deptno codigo_departamento,COUNT(e.empno) qtd,ROUND(avg(e.sal),2) media FROM emp e,dept d where e.deptno = d.deptno group by d.deptno;
+--5
+SELECT d.deptno codigo_departamento,d.dname nome_departamento,COUNT(e.empno) qtd,ROUND(avg(e.sal),2) media FROM emp e,dept d where e.deptno = d.deptno group by d.deptno,d.dname;
+--6 Inclua um novo departamento, com código 90, nome SUPPORT, localizado na cidade de ORLANDO
+INSERT INTO dept values(90,'SUPPORT','ORLANDO');
+--7 Liste o nome do funcionário e o nome e a localização de seus respectivos departamentos. Inclua na listagem também os departamentos que não possuem funcionários
+SELECT e.ename,d.loc FROM emp e full outer join dept d on (e.deptno = d.deptno);
+--8 Inclua um novo funcionário cujos dados são código 1234, nome STEVE, salario 12543
+INSERT INTO EMP(EMPNO,ENAME,SAL) values(1234,'STEVE',12543);
+--9 Liste o nome dos funcionário, o nome dos departamentos, e o salario dos funcionários. 
+-- Inclua na listagem os departamentos que não possuem funcionários e os funcionários que não possuem departamentos.
+SELECT e.ename Nome_Funcionario,d.dname Nome_Departamento,e.sal Salario FROM emp e full outer join dept d on (e.deptno = d.deptno);
+--10 O mesmo que o anterior, porém apenas aqueles funcionários cujo salário seja superior a 4000
+SELECT e.ename Nome_Funcionario,d.dname Nome_Departamento,e.sal Salario FROM emp e full outer join dept d on (e.deptno = d.deptno) where e.sal > 4000;
+--11 Liste os departamentos que não possuem funcionários;
+SELECT d.* FROM emp e right outer join dept d on (e.deptno = d.deptno) where e.deptno is null;
+--12 Liste os funcionários que não possuem departamentos;
+SELECT e.* FROM emp e left outer join dept d on (e.deptno = d.deptno) where e.deptno is null;
+
